@@ -1,23 +1,30 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import axios from 'axios';
 
 const Weather = () => {
+  const [city, setCity] = useState('');
   const [weatherData, setWeatherData] = useState(null);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await axios.get(
-          'https://api.openweathermap.org/data/2.5/weather?q=Göteborg&appid=1144e1b9b4e2b6bca6be2682d0927341'
-        );
-        setWeatherData(response.data);
-      } catch (error) {
-        console.error('Error fetching weather data:', error);
-      }
-    };
+  const fetchWeatherData = async () => {
+    try {
+      const response = await axios.get(
+        `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=1144e1b9b4e2b6bca6be2682d0927341`
+      );
+      setWeatherData(response.data);
+    } catch (error) {
+      console.error('Error fetching weather data:', error);
+    }
+  };
 
-    fetchData();
-  }, []);
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    fetchWeatherData();
+    setCity('');
+  };
+
+  const handleChange = (e) => {
+    setCity(e.target.value);
+  };
 
   const displayWeatherData = () => {
     if (weatherData) {
@@ -37,6 +44,15 @@ const Weather = () => {
 
   return (
     <div>
+      <form onSubmit={handleSubmit}>
+        <input
+          type="text"
+          placeholder="Enter a city"
+          value={city}
+          onChange={handleChange}
+        />
+        <button type="submit">Get Weather</button>
+      </form>
       {displayWeatherData()}
     </div>
   );
